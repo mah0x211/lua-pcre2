@@ -133,6 +133,34 @@ static int match_lua( lua_State *L )
 }
 
 
+static int jit_compile_lua( lua_State *L )
+{
+    regex_t *re = lauxh_checkudata( L, 1, MODULE_MT );
+    uint32_t flgs = lauxh_optflags( L, 2 );
+
+    // jit-compile if jitflgs specified
+    if( flgs )
+    {
+        int rc = pcre2_jit_compile( re->code, flgs );
+
+        if( rc ){
+            regex_error_t err;
+
+            regex_strerror( &err, rc );
+            lua_pushboolean( L, 0 );
+            lua_pushfstring( L, "PCRE2 JIT compilation failed: %s", err.msg );
+            return 2;
+        }
+
+        re->mode |= REGEX_MODE_JIT;
+    }
+
+    lua_pushboolean( L, 1 );
+
+    return 1;
+}
+
+
 static int gc_lua( lua_State *L )
 {
     regex_t *re = lua_touserdata( L, 1 );
@@ -155,7 +183,6 @@ static int new_lua( lua_State *L )
     size_t len = 0;
     const char *pattern = lauxh_checklstring( L, 1, &len );
     uint32_t flgs = lauxh_optflags( L, 2 );
-    uint32_t jitflgs = lauxh_optflags( L, 3 );
     regex_t *re = lua_newuserdata( L, sizeof( regex_t ) );
 
     if( re )
@@ -174,23 +201,8 @@ static int new_lua( lua_State *L )
                             (int)offset, err.msg );
             return 2;
         }
-        // jit-compile if jitflgs specified
-        else if( jitflgs )
-        {
-            if( ( rc = pcre2_jit_compile( re->code, jitflgs ) ) ){
-                regex_error_t err;
 
-                regex_strerror( &err, rc );
-                lua_pushnil( L );
-                lua_pushfstring( L, "PCRE2 JIT compilation failed: %s", err.msg );
-            }
-
-            re->mode |= REGEX_MODE_JIT;
-        }
-        else {
-            re->mode = 0;
-        }
-
+        re->mode = 0;
         lauxh_setmetatable( L, MODULE_MT );
 
         return 1;
@@ -212,6 +224,7 @@ LUALIB_API int luaopen_pcre2( lua_State *L )
         { NULL, NULL }
     };
     struct luaL_Reg method[] = {
+        { "jit_compile", jit_compile_lua },
         { "match", match_lua },
         { NULL, NULL }
     };
