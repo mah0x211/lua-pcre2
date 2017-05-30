@@ -68,8 +68,8 @@ static int match_lua( lua_State *L )
     regex_t *re = lauxh_checkudata( L, 1, MODULE_MT );
     size_t len = 0;
     PCRE2_SPTR sbj = (PCRE2_SPTR)lauxh_checklstring( L, 2, &len );
-    uint32_t opts = lauxh_optflags( L, 3 );
-    lua_Integer offset = lauxh_optinteger( L, 4, 0 );
+    lua_Integer offset = lauxh_optinteger( L, 3, 0 );
+    uint32_t opts = lauxh_optflags( L, 4 );
     pcre2_match_data *data = pcre2_match_data_create_from_pattern( re->code,
                                                                    NULL );
 
