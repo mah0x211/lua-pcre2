@@ -47,16 +47,16 @@
 typedef struct {
     uint32_t mode;
     pcre2_code *code;
-} regex_t;
+} lpcre2_t;
 
 
 typedef struct {
     int len;
     const char msg[256];
-} regex_error_t;
+} lpcre2_error_t;
 
 
-static inline void regex_strerror( regex_error_t *err, int errnum )
+static inline void regex_strerror( lpcre2_error_t *err, int errnum )
 {
     err->len = pcre2_get_error_message( errnum, (PCRE2_UCHAR*)err->msg,
                                         sizeof( err->msg ) );
@@ -65,23 +65,23 @@ static inline void regex_strerror( regex_error_t *err, int errnum )
 
 static int match_lua( lua_State *L )
 {
-    regex_t *re = lauxh_checkudata( L, 1, MODULE_MT );
+    lpcre2_t *p = lauxh_checkudata( L, 1, MODULE_MT );
     size_t len = 0;
     PCRE2_SPTR sbj = (PCRE2_SPTR)lauxh_checklstring( L, 2, &len );
     lua_Integer offset = lauxh_optinteger( L, 3, 0 );
     uint32_t opts = lauxh_optflags( L, 4 );
-    pcre2_match_data *data = pcre2_match_data_create_from_pattern( re->code,
+    pcre2_match_data *data = pcre2_match_data_create_from_pattern( p->code,
                                                                    NULL );
 
     if( data )
     {
         int rc = 0;
 
-        if( re->mode & REGEX_MODE_JIT ){
-            rc = pcre2_jit_match( re->code, sbj, len, offset, opts, data, NULL );
+        if( p->mode & REGEX_MODE_JIT ){
+            rc = pcre2_jit_match( p->code, sbj, len, offset, opts, data, NULL );
         }
         else {
-            rc = pcre2_match( re->code, sbj, len, offset, opts, data, NULL );
+            rc = pcre2_match( p->code, sbj, len, offset, opts, data, NULL );
         }
 
         if( rc > 0 )
@@ -103,7 +103,7 @@ static int match_lua( lua_State *L )
         // got error
         else
         {
-            regex_error_t err;
+            lpcre2_error_t err;
 
             lua_pushnil( L );
             lua_pushnil( L );
@@ -135,16 +135,16 @@ static int match_lua( lua_State *L )
 
 static int jit_compile_lua( lua_State *L )
 {
-    regex_t *re = lauxh_checkudata( L, 1, MODULE_MT );
+    lpcre2_t *p = lauxh_checkudata( L, 1, MODULE_MT );
     uint32_t flgs = lauxh_optflags( L, 2 );
 
     // jit-compile if jitflgs specified
     if( flgs )
     {
-        int rc = pcre2_jit_compile( re->code, flgs );
+        int rc = pcre2_jit_compile( p->code, flgs );
 
         if( rc ){
-            regex_error_t err;
+            lpcre2_error_t err;
 
             regex_strerror( &err, rc );
             lua_pushboolean( L, 0 );
@@ -152,7 +152,7 @@ static int jit_compile_lua( lua_State *L )
             return 2;
         }
 
-        re->mode |= REGEX_MODE_JIT;
+        p->mode |= REGEX_MODE_JIT;
     }
 
     lua_pushboolean( L, 1 );
@@ -163,9 +163,9 @@ static int jit_compile_lua( lua_State *L )
 
 static int gc_lua( lua_State *L )
 {
-    regex_t *re = lua_touserdata( L, 1 );
+    lpcre2_t *p = lua_touserdata( L, 1 );
 
-    pcre2_code_free( re->code );
+    pcre2_code_free( p->code );
 
     return 0;
 }
@@ -183,17 +183,17 @@ static int new_lua( lua_State *L )
     size_t len = 0;
     const char *pattern = lauxh_checklstring( L, 1, &len );
     uint32_t flgs = lauxh_optflags( L, 2 );
-    regex_t *re = lua_newuserdata( L, sizeof( regex_t ) );
+    lpcre2_t *p = lua_newuserdata( L, sizeof( lpcre2_t ) );
 
-    if( re )
+    if( p )
     {
         int rc = 0;
         PCRE2_SIZE offset = 0;
 
         // compile pattern
-        if( !( re->code = pcre2_compile( (PCRE2_SPTR)pattern, len, flgs, &rc,
-                                         &offset, NULL ) ) ){
-            regex_error_t err;
+        if( !( p->code = pcre2_compile( (PCRE2_SPTR)pattern, len, flgs, &rc,
+                                        &offset, NULL ) ) ){
+            lpcre2_error_t err;
 
             regex_strerror( &err, rc );
             lua_pushnil( L );
@@ -202,7 +202,7 @@ static int new_lua( lua_State *L )
             return 2;
         }
 
-        re->mode = 0;
+        p->mode = 0;
         lauxh_setmetatable( L, MODULE_MT );
 
         return 1;
