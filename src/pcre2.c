@@ -268,7 +268,7 @@ LUALIB_API int luaopen_pcre2( lua_State *L )
     lauxh_pushint2tbl( L, "MULTILINE", PCRE2_MULTILINE );
     lauxh_pushint2tbl( L, "NEVER_UCP", PCRE2_NEVER_UCP );
     lauxh_pushint2tbl( L, "NEVER_UTF", PCRE2_NEVER_UTF );
-    lauxh_pushint2tbl( L, "AUTO_CAPTURE", PCRE2_NO_AUTO_CAPTURE );
+    lauxh_pushint2tbl( L, "NO_AUTO_CAPTURE", PCRE2_NO_AUTO_CAPTURE );
     lauxh_pushint2tbl( L, "NO_AUTO_POSSESS", PCRE2_NO_AUTO_POSSESS );
     lauxh_pushint2tbl( L, "NO_DOTSTAR_ANCHOR", PCRE2_NO_DOTSTAR_ANCHOR );
     lauxh_pushint2tbl( L, "NO_START_OPTIMIZE", PCRE2_NO_START_OPTIMIZE );
