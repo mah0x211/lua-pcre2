@@ -297,14 +297,6 @@ LUALIB_API int luaopen_pcre2( lua_State *L )
     lauxh_pushint2tbl( L, "DFA_RESTART", PCRE2_DFA_RESTART );
     lauxh_pushint2tbl( L, "DFA_SHORTEST", PCRE2_DFA_SHORTEST );
 
-    // flags for pcre2_substitute()
-    // which passes any others through to pcre2_match()
-    lauxh_pushint2tbl( L, "SUBSTITUTE_GLOBAL", PCRE2_SUBSTITUTE_GLOBAL );
-    lauxh_pushint2tbl( L, "SUBSTITUTE_EXTENDED", PCRE2_SUBSTITUTE_EXTENDED );
-    lauxh_pushint2tbl( L, "SUBSTITUTE_UNSET_EMPTY", PCRE2_SUBSTITUTE_UNSET_EMPTY );
-    lauxh_pushint2tbl( L, "SUBSTITUTE_UNKNOWN_UNSET", PCRE2_SUBSTITUTE_UNKNOWN_UNSET );
-    lauxh_pushint2tbl( L, "SUBSTITUTE_OVERFLOW_LENGTH", PCRE2_SUBSTITUTE_OVERFLOW_LENGTH );
-
     // flags for pcre2_match()
     // not allowed for pcre2_dfa_match()
     // ignored for pcre2_jit_match()
