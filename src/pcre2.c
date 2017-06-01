@@ -56,7 +56,7 @@ typedef struct {
 } lpcre2_error_t;
 
 
-static inline void regex_strerror( lpcre2_error_t *err, int errnum )
+static inline void lpcre2_strerror( lpcre2_error_t *err, int errnum )
 {
     err->len = pcre2_get_error_message( errnum, (PCRE2_UCHAR*)err->msg,
                                         sizeof( err->msg ) );
@@ -122,7 +122,7 @@ static inline int regex_match_lua( lua_State *L, int nocap )
                 break;
 
                 default:
-                    regex_strerror( &err, rc );
+                    lpcre2_strerror( &err, rc );
                     lua_pushlstring( L, err.msg, err.len );
                     rc = 3;
                 break;
@@ -165,7 +165,7 @@ static int jit_compile_lua( lua_State *L )
         if( rc ){
             lpcre2_error_t err;
 
-            regex_strerror( &err, rc );
+            lpcre2_strerror( &err, rc );
             lua_pushboolean( L, 0 );
             lua_pushfstring( L, "PCRE2 JIT compilation failed: %s", err.msg );
             return 2;
@@ -214,7 +214,7 @@ static int new_lua( lua_State *L )
                                         &offset, NULL ) ) ){
             lpcre2_error_t err;
 
-            regex_strerror( &err, rc );
+            lpcre2_strerror( &err, rc );
             lua_pushnil( L );
             lua_pushfstring( L, "PCRE2 compilation failed at offset %d: %s",
                             (int)offset, err.msg );
