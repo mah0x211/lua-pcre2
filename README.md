@@ -23,7 +23,7 @@ local pcre2 = require('pcre2')
 ## Constants
 
 
-### Compile flags
+### Compile options
 
 - `ANCHORED`: Force pattern anchoring.
 - `ALT_BSUX`: Alternative handling of `\u`, `\U`, and `\x`.
@@ -38,33 +38,33 @@ local pcre2 = require('pcre2')
 - `MATCH_UNSET_BACKREF`: Match unset back references.
 - `MULTILINE`: `^ and `$` match newlines within data.
 - `NEVER_BACKSLASH_C`: Lock out the use of `\C` in patterns.
-- `NEVER_UCP`: Lock out `UCP` flag, e.g. via (*UCP)
-- `NEVER_UTF`: Lock out `UTF` flag, e.g. via (*UTF)
+- `NEVER_UCP`: Lock out `UCP` option, e.g. via (*UCP)
+- `NEVER_UTF`: Lock out `UTF` option, e.g. via (*UTF)
 - `NO_AUTO_CAPTURE`: Disable numbered capturing par theses. (named ones available)
 - `NO_AUTO_POSSESS`: Disable auto-possessification.
 - `NO_DOTSTAR_ANCHOR`: Disable automatic anchoring for `.*`.
 - `NO_START_OPTIMIZE`: Disable match-time start optimizations.
-- `NO_UTF_CHECK`: Do not check the pattern for `UTF` valid. (only relevant if `UTF` flag is set)
+- `NO_UTF_CHECK`: Do not check the pattern for `UTF` valid. (only relevant if `UTF` option is set)
 - `UCP`: Use Unicode properties for `\d`, `\w`, etc.
 - `UNGREEDY`: Invert greediness of quantifiers.
 - `UTF`: Treat pattern and subjects as UTF strings
 
 
-### JIT Compile flags
+### JIT Compile options
 
 - `JIT_COMPLETE`: compile code for full matching.
 - `JIT_PARTIAL_SOFT`: compile code for soft partial matching.
 - `JIT_PARTIAL_HARD`: compile code for hard partial matching.
 
 
-### Match flags
+### Match options
 
 - `ANCHORED`: Match only at the first position.
 - `NOTBOL`: Subject string is not the beginning of a line.
 - `NOTEOL`: Subject string is not the end of a line.
 - `NOTEMPTY`: An empty string is not a valid match.
 - `NOTEMPTY_ATSTART`: An empty string at the start of the subject is not a valid match.
-- `NO_UTF_CHECK`: Do not check the subject for UTF validity (only relevant if `UTF` flag was set at compile time)
+- `NO_UTF_CHECK`: Do not check the subject for UTF validity (only relevant if `UTF` option was set at compile time)
 - `PARTIAL_SOFT`: Return `PCRE2_ERROR_PARTIAL` for a partial match if no full matches are found.
 - `PARTIAL_HARD`: Return `PCRE2_ERROR_PARTIAL` for a partial match if that is found before a full match.
 
@@ -73,14 +73,14 @@ For details of partial matching, see the `pcre2partial` page.
 
 ## Creating a PCRE2 object
 
-### re, err = pcre2.new( pattern [, flag, ...] )
+### re, err = pcre2.new( pattern [, opt, ...] )
 
 creates a new PCRE2 object.
 
 **Params**
 
 - `pattern:string`: string containing expression to be compiled.
-- `flag, ...:number`: [Compile flags](#compile-flags).
+- `opt, ...:number`: [Compile options](#compile-options).
 
 **Returns**
 
@@ -90,13 +90,13 @@ creates a new PCRE2 object.
 
 ## Methods
 
-### ok, err = re:jit_compile( [flag, ...] )
+### ok, err = re:jit_compile( [opt, ...] )
 
 This function requests JIT compilation, which, if the just-in-time compiler is available, further processes a compiled pattern into machine code that executes much faster than the pcre2_match() interpretive matching function. Full details are given in the `pcre2jit` documentation.
 
 **Params**
 
-- `flag, ...:number`: [JIT Compile flags](#jit-compile-flags).
+- `opt, ...:number`: [JIT Compile options](#jit-compile-options).
 
 **Returns**
 
@@ -104,7 +104,7 @@ This function requests JIT compilation, which, if the just-in-time compiler is a
 - `err:string`: error message.
 
 
-### head, tail, err = re:match( sbj [, offset [, flags]] )
+### head, tail, err = re:match( sbj [, offset [, opt, ...]] )
 
 matches a compiled regular expression against a given subject string, using a matching algorithm that is similar to Perl's. It returns offsets to captured substrings.
 
@@ -112,7 +112,7 @@ matches a compiled regular expression against a given subject string, using a ma
 
 - `sbj:string`: the subject string.
 - `offset:number`: offset in the subject at which to start matching.
-- `flag, ...:number`: [Match flags](#match-flags).
+- `opt, ...:number`: [Match options](#match-options).
 
 **Returns**
 
