@@ -136,12 +136,12 @@ static int match_lua( lua_State *L )
 static int jit_compile_lua( lua_State *L )
 {
     lpcre2_t *p = lauxh_checkudata( L, 1, MODULE_MT );
-    uint32_t flgs = lauxh_optflags( L, 2 );
+    uint32_t opts = lauxh_optflags( L, 2 );
 
-    // jit-compile if jitflgs specified
-    if( flgs )
+    // jit-compile if opts specified
+    if( opts )
     {
-        int rc = pcre2_jit_compile( p->code, flgs );
+        int rc = pcre2_jit_compile( p->code, opts );
 
         if( rc ){
             lpcre2_error_t err;
@@ -182,7 +182,7 @@ static int new_lua( lua_State *L )
 {
     size_t len = 0;
     const char *pattern = lauxh_checklstring( L, 1, &len );
-    uint32_t flgs = lauxh_optflags( L, 2 );
+    uint32_t opts = lauxh_optflags( L, 2 );
     lpcre2_t *p = lua_newuserdata( L, sizeof( lpcre2_t ) );
 
     if( p )
@@ -191,7 +191,7 @@ static int new_lua( lua_State *L )
         PCRE2_SIZE offset = 0;
 
         // compile pattern
-        if( !( p->code = pcre2_compile( (PCRE2_SPTR)pattern, len, flgs, &rc,
+        if( !( p->code = pcre2_compile( (PCRE2_SPTR)pattern, len, opts, &rc,
                                         &offset, NULL ) ) ){
             lpcre2_error_t err;
 
