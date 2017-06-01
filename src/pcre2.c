@@ -63,7 +63,7 @@ static inline void lpcre2_strerror( lpcre2_error_t *err, int errnum )
 }
 
 
-static inline int regex_match_lua( lua_State *L, int nocap )
+static inline int lpcre2_match_lua( lua_State *L, int nocap )
 {
     lpcre2_t *p = lauxh_checkudata( L, 1, MODULE_MT );
     size_t len = 0;
@@ -143,12 +143,12 @@ static inline int regex_match_lua( lua_State *L, int nocap )
 
 static int match_nocap_lua( lua_State *L )
 {
-    return regex_match_lua( L, 1 );
+    return lpcre2_match_lua( L, 1 );
 }
 
 static int match_lua( lua_State *L )
 {
-    return regex_match_lua( L, 0 );
+    return lpcre2_match_lua( L, 0 );
 }
 
 
