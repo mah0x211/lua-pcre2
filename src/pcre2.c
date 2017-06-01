@@ -63,7 +63,7 @@ static inline void regex_strerror( lpcre2_error_t *err, int errnum )
 }
 
 
-static int match_lua( lua_State *L )
+static inline int regex_match_lua( lua_State *L, int nocap )
 {
     lpcre2_t *p = lauxh_checkudata( L, 1, MODULE_MT );
     size_t len = 0;
@@ -87,16 +87,25 @@ static int match_lua( lua_State *L )
         if( rc > 0 )
         {
             PCRE2_SIZE *ovec = pcre2_get_ovector_pointer( data );
-            int i = 0;
 
-            // create head and tail arrays
-            lua_createtable( L, rc, 0 );
-            lua_createtable( L, rc, 0 );
-            for(; i < rc; i++ ){
-                lua_pushinteger( L, ovec[i*2] + 1 );
-                lua_rawseti( L, -3, i + 1 );
-                lua_pushinteger( L, ovec[i*2+1] );
-                lua_rawseti( L, -2, i + 1 );
+            // push only offsets of matched strings
+            if( nocap ){
+                lua_pushinteger( L, ovec[0] + 1 );
+                lua_pushinteger( L, ovec[1] );
+            }
+            else
+            {
+                int i = 0;
+
+                // create head and tail arrays
+                lua_createtable( L, rc, 0 );
+                lua_createtable( L, rc, 0 );
+                for(; i < rc; i++ ){
+                    lua_pushinteger( L, ovec[i*2] + 1 );
+                    lua_rawseti( L, -3, i + 1 );
+                    lua_pushinteger( L, ovec[i*2+1] );
+                    lua_rawseti( L, -2, i + 1 );
+                }
             }
             rc = 2;
         }
@@ -130,6 +139,16 @@ static int match_lua( lua_State *L )
     lua_pushstring( L, strerror( errno ) );
 
     return 2;
+}
+
+static int match_nocap_lua( lua_State *L )
+{
+    return regex_match_lua( L, 1 );
+}
+
+static int match_lua( lua_State *L )
+{
+    return regex_match_lua( L, 0 );
 }
 
 
@@ -226,6 +245,7 @@ LUALIB_API int luaopen_pcre2( lua_State *L )
     struct luaL_Reg method[] = {
         { "jit_compile", jit_compile_lua },
         { "match", match_lua },
+        { "match_nocap", match_nocap_lua },
         { NULL, NULL }
     };
     struct luaL_Reg *ptr = mmethod;
