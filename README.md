@@ -36,7 +36,7 @@ local pcre2 = require('pcre2')
 - `EXTENDED`: Ignore white space and `#` comments.
 - `FIRSTLINE`: Force matching to be before newline.
 - `MATCH_UNSET_BACKREF`: Match unset back references.
-- `MULTILINE`: `^ and `$` match newlines within data.
+- `MULTILINE`: `^` and `$` match newlines within data.
 - `NEVER_BACKSLASH_C`: Lock out the use of `\C` in patterns.
 - `NEVER_UCP`: Lock out `UCP` option, e.g. via (*UCP)
 - `NEVER_UTF`: Lock out `UTF` option, e.g. via (*UTF)
