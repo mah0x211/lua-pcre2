@@ -121,6 +121,23 @@ matches a compiled regular expression against a given subject string, using a ma
 - `err:string`: error message.
 
 
+### head, tail, err = re:match_nocap( sbj [, offset [, opt, ...]] )
+
+almost same as `match` method but it returns only offsets only matched string.
+
+**Params**
+
+- `sbj:string`: the subject string.
+- `offset:number`: offset in the subject at which to start matching.
+- `opt, ...:number`: [Match options](#match-options).
+
+**Returns**
+
+- `head:number`: start offsets.
+- `tail:number`: end offsets.
+- `err:string`: error message.
+
+
 ## Example
 
 ```lua
