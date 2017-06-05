@@ -123,7 +123,7 @@ matches a compiled regular expression against a given subject string, using a ma
 
 ### head, tail, err = re:match_nocap( sbj [, offset [, opt, ...]] )
 
-almost same as `match` method but it returns only offsets only matched string.
+almost same as `match` method but it returns only offsets of matched string.
 
 **Params**
 
