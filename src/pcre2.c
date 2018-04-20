@@ -203,35 +203,25 @@ static int new_lua( lua_State *L )
     const char *pattern = lauxh_checklstring( L, 1, &len );
     uint32_t opts = lauxh_optflags( L, 2 );
     lpcre2_t *p = lua_newuserdata( L, sizeof( lpcre2_t ) );
+    int rc = 0;
+    PCRE2_SIZE offset = 0;
 
-    if( p )
-    {
-        int rc = 0;
-        PCRE2_SIZE offset = 0;
+    // compile pattern
+    if( !( p->code = pcre2_compile( (PCRE2_SPTR)pattern, len, opts, &rc, &offset,
+                                    NULL ) ) ){
+        lpcre2_error_t err;
 
-        // compile pattern
-        if( !( p->code = pcre2_compile( (PCRE2_SPTR)pattern, len, opts, &rc,
-                                        &offset, NULL ) ) ){
-            lpcre2_error_t err;
-
-            lpcre2_strerror( &err, rc );
-            lua_pushnil( L );
-            lua_pushfstring( L, "PCRE2 compilation failed at offset %d: %s",
-                            (int)offset, err.msg );
-            return 2;
-        }
-
-        p->mode = 0;
-        lauxh_setmetatable( L, MODULE_MT );
-
-        return 1;
+        lpcre2_strerror( &err, rc );
+        lua_pushnil( L );
+        lua_pushfstring( L, "PCRE2 compilation failed at offset %d: %s",
+                        (int)offset, err.msg );
+        return 2;
     }
 
-    // got mem error
-    lua_pushnil( L );
-    lua_pushstring( L, strerror( errno ) );
+    p->mode = 0;
+    lauxh_setmetatable( L, MODULE_MT );
 
-    return 2;
+    return 1;
 }
 
 
