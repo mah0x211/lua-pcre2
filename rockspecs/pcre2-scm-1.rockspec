@@ -8,17 +8,30 @@ description = {
     summary = "PCRE2 bindings for lua",
     homepage = "https://github.com/mah0x211/lua-pcre2",
     license = "MIT/X11",
-    maintainer = "Masatoshi Teruya"
+    maintainer = "Masatoshi Fukunaga"
 }
 dependencies = {
     "lua >= 5.1",
 }
+external_dependencies = {
+    LIBPCRE2 = {
+        header = "pcre2.h",
+        library = "pcre2-8",
+    }
+}
 build = {
-    type = "command",
-    build_command = [[
-        CFLAGS="$(CFLAGS)" sh build_deps.sh && autoreconf -ivf && CFLAGS="$(CFLAGS)" CPPFLAGS="-I$(LUA_INCDIR)" LIBFLAG="$(LIBFLAG)" OBJ_EXTENSION="$(OBJ_EXTENSION)" LIB_EXTENSION="$(LIB_EXTENSION)" LIBDIR="$(LIBDIR)" CONFDIR="$(CONFDIR)" ./configure && make clean && make
-    ]],
-    install_command = [[
-        make install
-    ]]
+    type = "builtin",
+    modules = {
+        ["pcre2"] = {
+            sources = { "src/pcre2.c" },
+            libraries = { "pcre2-8" },
+            incdirs = {
+                "deps/lauxhlib",
+                "$(LIBPCRE2_INCDIR)"
+            },
+            libdirs = {
+                "$(LIBPCRE2_LIBDIR)"
+            }
+        },
+    }
 }

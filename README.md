@@ -1,5 +1,8 @@
 # lua-pcre2
 
+[![test](https://github.com/mah0x211/lua-pcre2/actions/workflows/test.yml/badge.svg)](https://github.com/mah0x211/lua-pcre2/actions/workflows/test.yml)
+
+
 PCRE2 bindings for lua.
 
 **NOTE:** this module is under heavy development.
@@ -7,9 +10,7 @@ PCRE2 bindings for lua.
 
 ## Dependencies
 
-- luarocks-fetch-gitrec: <https://github.com/siffiejoe/luarocks-fetch-gitrec>
 - lauxhlib: <https://github.com/mah0x211/lauxhlib>
-- pcre2: <https://github.com/mah0x211/pcre2>
 
 ---
 
