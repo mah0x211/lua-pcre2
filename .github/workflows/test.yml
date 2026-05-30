@@ -26,7 +26,10 @@ jobs:
         luacheck .
 
   test:
+    needs: luacheck
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     container:
       image: ghcr.io/mah0x211/lua-ci:latest
     strategy:
@@ -58,8 +61,20 @@ jobs:
     -
       name: Install
       run: |
-        luarocks make
+        PCRE2_COVERAGE=1 luarocks make
     -
       name: Run Test
       run: |
         lua ./test/pcre2_test.lua
+    -
+      name: Generate coverage reports
+      run: |
+        sh ./covgen.sh
+    -
+      name: Upload C coverage to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        use_oidc: true
+        disable_search: true
+        files: ./coverage/lcov.info
+        flags: unittests

@@ -24,16 +24,17 @@
  *
  *  Created by Masatoshi Teruya on 17/05/29.
  */
-#include <errno.h>
-#include <lauxhlib.h>
+// depend
+#include "lauxhlib.h"
+// lua
 #include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
+// system
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
 #define PCRE2_CODE_UNIT_WIDTH 8
-#include "pcre2.h"
+#include <pcre2.h>
 
 // MARK: lua binding
 #define MODULE_MT "pcre2"

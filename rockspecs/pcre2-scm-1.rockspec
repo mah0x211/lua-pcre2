@@ -19,11 +19,20 @@ external_dependencies = {
     -- dependencies are not found.
 }
 build_dependencies = {
-    "luarocks-build-hooks >= 0.4.0",
+    "luarocks-build-hooks >= 0.8.0",
 }
 build = {
     type = "hooks",
-    before_build = "$(pkgconfig)",
+    before_build = {
+        "$(pkgconfig)",
+        "$(extra-vars)",
+    },
+    conditional_variables = {
+        PCRE2_COVERAGE = {
+            CFLAGS = "--coverage",
+            LIBFLAG = "--coverage",
+        },
+    },
     pkgconfig_dependencies = {
         ["LIBPCRE2-8"] = {
             header = "pcre2.h",
